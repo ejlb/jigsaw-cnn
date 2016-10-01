@@ -5,18 +5,17 @@ from chainer import links as L
 
 
 class AlexNet(chainer.Chain):
-    """ Alexnet adapted to take 64x64 crops for jigsaw cnn. Padding set to produce the dense
-        layer size specified by the jigsaw CNN paper. Stops at first dense layer and patch
-        representations are aggregated in the jigsaw CNN """
+    """ Alexnet-type network adapted to take 64x64 crops for jigsaw cnn. Stops at first dense
+        layer. Dense layer representations are aggregated in the jigsaw CNN """
 
     def __init__(self):
         super(AlexNet, self).__init__(
-            conv1=L.Convolution2D(3, 96, 11, stride=2, pad=4),
-            conv2=L.Convolution2D(96, 256, 5, pad=3),
+            conv1=L.Convolution2D(3, 96, 7, stride=2, pad=3),
+            conv2=L.Convolution2D(96, 256, 5, pad=2),
             conv3=L.Convolution2D(256, 384, 3, pad=1),
             conv4=L.Convolution2D(384, 384, 3, pad=1),
             conv5=L.Convolution2D(384, 256, 3, pad=1),
-            fc6=L.Linear(4096, 512),  # concat this across 9 patches to get 4608 representation
+            fc6=L.Linear(4096, 512),
         )
 
     def __call__(self, x):
@@ -31,6 +30,7 @@ class AlexNet(chainer.Chain):
 
         h = F.max_pooling_2d(F.relu(self.conv5(h)), 3, stride=2)
 
+        """ This is concatenated in the jigsaw CNN across 9 patches to get 4608 representation """
         h = F.relu(self.fc6(h))
 
         return h

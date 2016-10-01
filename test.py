@@ -20,4 +20,3 @@ batch = chainer.Variable(np.expand_dims(permuted_patches, axis=1))
 
 jigsaw = Jigsaw(AlexNet())
 jigsaw(batch, np.array([label], dtype=np.int32))
-

@@ -33,19 +33,21 @@ def grid_coord_iter(grid_length, grid_square_length):
 
 
 def random_patches(image_arr, patches=9, patch_size=75, crop_size=64):
-    """ Split the square `image_arr` into 9 patches and then randomly crops each patch """
-    sq_patches = math.sqrt(patches)
+    """ Split the square `image_arr` into 9 patches and then randomly crops each patch. Note
+        that the following assumptions must hold:
 
-    # ensure patches and patch_size are consistent with input size
-    assert sq_patches.is_integer()
-    assert len(image_arr.shape) == 3
-    assert image_arr.shape[1] == image_arr.shape[2]
-    assert image_arr.shape[1] == patch_size * sq_patches
+        * `patches` is a square number
+        * `image_arr` is square
+        * `image_arr` dimension is `patch_size * sqrt(patches)`
+    """
 
     random_patch_crops = []
 
-    for m_start, m_stop, n_start, n_stop in grid_coord_iter(int(sq_patches), patch_size):
+    sq_patches = int(math.sqrt(patches))
+
+    for m_start, m_stop, n_start, n_stop in grid_coord_iter(sq_patches, patch_size):
         patch = image_arr[:, m_start:m_stop, n_start:n_stop]
-        random_patch_crops.append(random_crop(patch, crop_size))
+        random_patch = random_crop(patch, crop_size)
+        random_patch_crops.append(random_patch)
 
     return random_patch_crops

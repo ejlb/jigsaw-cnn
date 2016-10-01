@@ -5,6 +5,8 @@ from chainer import links as L
 
 
 class Jigsaw(chainer.Chain):
+    """ Siamese jigsaw CNN for self-supervised learning """
+
     def __init__(self, alexnet):
         super(Jigsaw, self).__init__(
             fc7=L.Linear(512 * 9, 4096),  # concat of 9 x 512 patch representations
@@ -29,9 +31,7 @@ class Jigsaw(chainer.Chain):
             alexnet representation for each patch """
         for patch_batch in F.split_axis(x, x.data.shape[0], 0):
             h = F.reshape(patch_batch, x.data.shape[1:])  # drop patch axis for alexnet
-            h = self.alexnet(h)
-
-            patch_representations.append(h)
+            patch_representations.append(self.alexnet(h))
 
         """ Concatenate along the representation axis to get a single representation """
         h = F.concat(patch_representations, axis=1)
@@ -39,5 +39,5 @@ class Jigsaw(chainer.Chain):
         h = F.relu(self.fc7(h))
         h = F.relu(self.fc8(h))
 
-        """ Loss a prediction of which permutation we applied to these patches """
+        """ Loss is a prediction of which permutation we applied to these patches """
         return F.softmax_cross_entropy(h, t)
