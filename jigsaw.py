@@ -9,7 +9,6 @@ class Jigsaw(chainer.Chain):
         super(Jigsaw, self).__init__(
             fc7=L.Linear(512 * 9, 4096),  # concat of 9 x 512 patch representations
             fc8=L.Linear(4096, 100),
-            softmax=L.Linear(100, 64),
         )
 
         self.alexnet = alexnet
@@ -41,4 +40,4 @@ class Jigsaw(chainer.Chain):
         h = F.relu(self.fc8(h))
 
         """ Loss a prediction of which permutation we applied to these patches """
-        return F.softmax_cross_entropy(self.softmax(h), t)
+        return F.softmax_cross_entropy(h, t)
