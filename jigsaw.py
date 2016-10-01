@@ -1,13 +1,12 @@
 import chainer
 
 from chainer import functions as F
-from chainer.functions import array as FA
 from chainer import links as L
 
 
 class Jigsaw(chainer.Chain):
     def __init__(self, alexnet):
-        super(AlexNet, self).__init__(
+        super(Jigsaw, self).__init__(
             fc7=L.Linear(512 * 9, 4096),  # concat of 9 x 512 patch representations
             fc8=L.Linear(4096, 100),
             softmax=L.Linear(100, 64),
@@ -27,13 +26,19 @@ class Jigsaw(chainer.Chain):
 
         patch_representations = []
 
-        for patch_batch in FA.split_axis(x, x.data.shape[0], 0):
-            h = self.alexnet(patch_batch)
-            h = FA.reshape(h, [1] + x.data.shape[1:])  # reshape with extra dim for concat
+        """ Split into patch batches of shape (batches, channels, height, width) and calculate
+            alexnet representation for each patch """
+        for patch_batch in F.split_axis(x, x.data.shape[0], 0):
+            h = F.reshape(patch_batch, x.data.shape[1:])  # drop patch axis for alexnet
+            h = self.alexnet(h)
 
-        h = FA.concat(patch_representations, axis=0)
+            patch_representations.append(h)
 
-        h = self.relu(self.fc7(h))
-        h = self.relu(self.fc7(h))
+        """ Concatenate along the representation axis to get a single representation """
+        h = F.concat(patch_representations, axis=1)
 
+        h = F.relu(self.fc7(h))
+        h = F.relu(self.fc8(h))
+
+        """ Loss a prediction of which permutation we applied to these patches """
         return F.softmax_cross_entropy(self.softmax(h), t)
