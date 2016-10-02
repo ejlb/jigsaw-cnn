@@ -30,14 +30,16 @@ class Jigsaw(chainer.Chain):
         """ Split into patch batches of shape (batches, channels, height, width) and calculate
             alexnet representation for each patch """
         for patch_batch in F.split_axis(x, x.data.shape[0], 0):
-            h = F.reshape(patch_batch, x.data.shape[1:])  # drop patch axis for alexnet
-            patch_representations.append(self.alexnet(h))
+            # drop patch axis for alexnet
+            h = F.reshape(patch_batch, x.data.shape[1:])
+            h = self.alexnet(h)
+            patch_representations.append(h)
 
-        """ Concatenate along the representation axis to get a single representation """
+        """ Join along the representation axis """
         h = F.concat(patch_representations, axis=1)
 
         h = F.relu(self.fc7(h))
         h = F.relu(self.fc8(h))
 
         """ Loss is a prediction of which permutation we applied to these patches """
-        return F.softmax_cross_entropy(h, t)
+        return F.softmax_cross_entropy(h, t), F.accuracy(h, t)
