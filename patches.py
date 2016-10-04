@@ -21,9 +21,8 @@ def grid_coord_iter(grid_length, grid_square_length):
         param: grid_square_length - size of each grid square
     """
 
-    for row in range(grid_length):
-        for column in range(grid_length):
-
+    for column in range(grid_length):
+        for row in range(grid_length):
             m_start = row * grid_square_length
             m_stop = (row + 1) * grid_square_length
             n_start = column * grid_square_length
@@ -51,3 +50,11 @@ def random_patches(image_arr, patches=9, patch_size=75, crop_size=64):
         random_patch_crops.append(random_patch)
 
     return random_patch_crops
+
+
+def zero_patch(patches):
+    """ Randomly drop / zero a patch to make reconstruction harder. To identify an
+        n-permutations of we only need n-1 members """
+    unlucky_patch_id = random.randint(0, len(patches))
+    del patches[unlucky_patch]
+    return patches
