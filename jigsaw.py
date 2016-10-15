@@ -44,7 +44,6 @@ class Jigsaw(chainer.Chain):
 
         return h
 
-
     def __call__(self, x, t):
         """ Input is a batch of patches of shape:
                 (patches, batches, channels, width, height)
@@ -57,7 +56,7 @@ class Jigsaw(chainer.Chain):
         patch_representations = []
 
         # move patch axis to position 0 for splitting
-        ############# A BIT HACKY MAKE NICER
+        # A BIT HACKY MAKE NICER
         x = F.transpose(F.reshape(x, (-1, 9, 3, 64, 64)), (1, 0, 2, 3, 4))
         t = F.reshape(t, (-1,))
 

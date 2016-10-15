@@ -1,5 +1,6 @@
-import numpy as np
 import pickle
+
+import numpy as np
 
 
 def load_permutation_indices(path='data/permutations.pkl'):

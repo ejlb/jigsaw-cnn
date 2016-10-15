@@ -1,5 +1,4 @@
-# number of permutations and generation method
-    # look at confusion matrix
+# number of permutations and generation method (look at confusion matrix)
 # number of patches
 # number of images
 # visualisations
@@ -11,18 +10,17 @@
 
 # benchmark against something
 
-from jigsaw import Jigsaw
-import dataset
-
-import numpy as np
+import argparse
 
 import chainer
-import argparse
+
 from chainer import optimizers
 from chainer.optimizer import WeightDecay
 from chainer.training import extensions
-from chainer.training import trigger
-import collections
+
+import dataset
+
+from jigsaw import Jigsaw
 
 
 def parse_args():

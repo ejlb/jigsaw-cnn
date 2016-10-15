@@ -2,9 +2,9 @@ import glob
 
 from PIL import Image
 
-import numpy as np
-
 from chainer.dataset import DatasetMixin
+
+import numpy as np
 
 import patches
 import permutations
@@ -25,7 +25,7 @@ class PatchDataset(DatasetMixin):
         image = Image.open(self.files[i]).convert('RGB')
 
         image = patches.scale(image)
-        image_array = np.array(image).transpose(2,1,0).astype(np.float32) - self.mean
+        image_array = np.array(image).transpose(2, 1, 0).astype(np.float32) - self.mean
 
         image_crop = patches.random_crop(image_array)
 
