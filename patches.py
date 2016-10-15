@@ -1,6 +1,28 @@
 import math
 import random
 
+from PIL import Image
+
+
+def scale(image, min_dim=256):
+    """ Aspect-ratio preserving scale such that the smallest dim is equal to `min_dim` """
+    # no scaling, keep images full size
+    if min_dim == -1:
+        return image
+
+    # aspect-ratio preserving scale so that the smallest dimension is `min_dim`
+    width, height = image.size
+    scale_dimension = width if width < height else height
+    scale_ratio = float(min_dim) / scale_dimension
+
+    if scale_ratio == 1:
+        return image
+
+    return image.resize(
+        (int(width * scale_ratio), int(height * scale_ratio)),
+        Image.ANTIALIAS,
+    )
+
 
 def random_crop(image_arr, crop_size=225):
     m, n = image_arr.shape[1:]
@@ -52,9 +74,9 @@ def random_patches(image_arr, patches=9, patch_size=75, crop_size=64):
     return random_patch_crops
 
 
-def zero_patch(patches):
-    """ Randomly drop / zero a patch to make reconstruction harder. To identify an
+def drop_patch(patches):
+    """ Randomly drop a patch to make reconstruction harder. To identify an
         n-permutations of we only need n-1 members """
-    unlucky_patch_id = random.randint(0, len(patches))
-    del patches[unlucky_patch]
+    drop_patch_id = random.randint(0, len(patches))
+    del patches[drop_patch_id]
     return patches
