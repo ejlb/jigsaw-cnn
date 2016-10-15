@@ -1,11 +1,11 @@
 # validation set
 # chainer loop / dataset
-# fix backprop hack (2 optimizers)
 
-# number of permutations
-# permutation generation method
+# number of permutations and generation method
+    # look at confusion matrix
 # number of patches
 # drop patch
+# visualisations
 
 # -1 for cpu
 # save option
@@ -14,7 +14,6 @@
 
 from patches import *
 from jigsaw import Jigsaw
-from cnn import CNN
 from permutations import permute_patches, load_permutation_indices
 
 import numpy as np
@@ -52,9 +51,7 @@ def parse_args():
 args = parse_args()
 permutation_indices = load_permutation_indices()
 
-patch_cnn = CNN()
-patch_cnn.to_gpu(args.gpu)
-jigsaw = Jigsaw(patch_cnn)
+jigsaw = Jigsaw()
 jigsaw.to_gpu(args.gpu)
 
 losses = collections.deque(maxlen=20)
@@ -62,9 +59,6 @@ accs = collections.deque(maxlen=20)
 
 optimizer = optimizers.Adam()
 optimizer.setup(jigsaw)
-
-aoptimizer = optimizers.Adam()
-aoptimizer.setup(patch_cnn)
 
 batch_x = []
 batch_y = []
@@ -109,11 +103,9 @@ for epoch in range(args.epochs):
 
             loss, acc = jigsaw(batch_x, batch_y)
 
-            aoptimizer.zero_grads()
             optimizer.zero_grads()
             loss.backward()
             optimizer.update()
-            aoptimizer.update()
 
             loss.to_cpu()
             losses.append(loss.data)
