@@ -2,6 +2,7 @@ import chainer
 
 from chainer import functions as F
 from chainer import links as L
+from chainer import reporter
 
 
 class Jigsaw(chainer.Chain):
@@ -53,8 +54,12 @@ class Jigsaw(chainer.Chain):
                 width = 64
                 height = 64
         """
-
         patch_representations = []
+
+        # move patch axis to position 0 for splitting
+        ############# A BIT HACKY MAKE NICER
+        x = F.transpose(F.reshape(x, (192, 9, 3, 64, 64)), (1, 0, 2, 3, 4))
+        t = F.reshape(t, (-1,))
 
         """ Split into patch batches of shape (batches, channels, height, width) and calculate
             alexnet representation for each patch """
@@ -71,4 +76,10 @@ class Jigsaw(chainer.Chain):
         h = self.fc8(h)
 
         """ Loss is a prediction of which permutation we applied to these patches """
-        return F.softmax_cross_entropy(h, t), F.accuracy(h, t)
+        loss = F.softmax_cross_entropy(h, t)
+        accuracy = F.accuracy(h, t)
+
+        reporter.report({'loss': loss}, self)
+        reporter.report({'accuracy': accuracy}, self)
+
+        return loss
