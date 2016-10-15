@@ -1,8 +1,7 @@
 # Jigsaw CNN
 
-A chainer implementation of self-supervised [jigsaw CNNs](https://arxiv.org/abs/1603.09246). The
-authors have published their [caffe
-implementation](https://github.com/MehdiNoroozi/JigsawPuzzleSolver)
+Work in progress
 
-I've gone for maximum randomness in this implementation but you can get make training faster by
-precalculating batches or decreasing the randomness of the patch selection and permutation.
+A chainer implementation of self-supervised [jigsaw CNNs](https://arxiv.org/abs/1603.09246). The authors have published their [caffe implementation](https://github.com/MehdiNoroozi/JigsawPuzzleSolver)
+
+Training could be made faster by precalculating batches. To identify an `n-permutation` we only need `n-1` elements so I've made the task harder by randomly zero'ing one of the patches
