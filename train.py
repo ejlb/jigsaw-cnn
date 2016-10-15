@@ -1,13 +1,15 @@
 # number of permutations and generation method
     # look at confusion matrix
 # number of patches
-# drop patch
+# number of images
 # visualisations
 
 # -1 for cpu
 # save option
-# min-dim & crop_size
+# scale min-dim & crop_size & batch & iter_trigger stuff
+# number of test / train images
 
+# benchmark against something
 
 from jigsaw import Jigsaw
 import dataset
@@ -32,7 +34,7 @@ def parse_args():
                         help='maximum number of epochs')
     parser.add_argument('--cpu-procs', type=int, default=10,
                         help='CPU processes to use for batch loading')
-    parser.add_argument('--iter-trigger', type=int, default=100,
+    parser.add_argument('--iter-trigger', type=int, default=380,
                         help='Iteration multiples that trigger logging')
     parser.add_argument('--mean', type=int, default=183,
                         help='value to subtract from input images')
@@ -48,7 +50,7 @@ def parse_args():
 
 args = parse_args()
 
-
+print args
 print 'loading data ...'
 
 train_dataset = dataset.PatchDataset(args.train_glob, args.mean)

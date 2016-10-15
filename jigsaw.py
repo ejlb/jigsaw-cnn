@@ -23,7 +23,7 @@ class Jigsaw(chainer.Chain):
 
             fc6=L.Linear(256 * 3 * 3, 512),  # representation for one patch
             fc7=L.Linear(512 * 9, 4096),     # concat of 9 x 512 patch representations
-            fc8=L.Linear(4096, 64),
+            fc8=L.Linear(4096, 100),
         )
 
     def patch_representation(self, x):
@@ -58,11 +58,11 @@ class Jigsaw(chainer.Chain):
 
         # move patch axis to position 0 for splitting
         ############# A BIT HACKY MAKE NICER
-        x = F.transpose(F.reshape(x, (192, 9, 3, 64, 64)), (1, 0, 2, 3, 4))
+        x = F.transpose(F.reshape(x, (-1, 9, 3, 64, 64)), (1, 0, 2, 3, 4))
         t = F.reshape(t, (-1,))
 
-        """ Split into patch batches of shape (batches, channels, height, width) and calculate
-            alexnet representation for each patch """
+        """ Split into patch batches of shape (batches, channels, height, width) and
+            calculate representation for each patch """
         for patch_batch in F.split_axis(x, x.data.shape[0], 0):
             # drop patch axis for alexnet
             h = F.reshape(patch_batch, x.data.shape[1:])

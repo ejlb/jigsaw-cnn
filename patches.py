@@ -77,6 +77,6 @@ def random_patches(image_arr, patches=9, patch_size=75, crop_size=64):
 def drop_patch(patches):
     """ Randomly drop a patch to make reconstruction harder. To identify an
         n-permutations of we only need n-1 members """
-    drop_patch_id = random.randint(0, len(patches))
-    del patches[drop_patch_id]
+    drop_patch_id = random.randint(0, len(patches) - 1)
+    patches[drop_patch_id] *= 0
     return patches
