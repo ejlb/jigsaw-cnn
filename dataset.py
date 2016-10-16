@@ -19,7 +19,7 @@ class PatchDataset(DatasetMixin):
 
     def __len__(self):
         # TODO, make number of batches a param
-        return min(self.n, 192 * 5000)
+        return min(self.n, 192 * 10000)
 
     def get_example(self, i):
         image = Image.open(self.files[i]).convert('RGB')

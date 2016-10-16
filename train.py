@@ -1,8 +1,5 @@
-# -1 for cpu
-# save option
 # number of test / train images
 # visualisations
-
 # number of patches
 # benchmark against something (imagenet?)
 
@@ -14,6 +11,7 @@ from chainer import optimizers
 from chainer.optimizer import WeightDecay
 from chainer.training import extensions
 
+import constants
 import dataset
 
 from jigsaw import Jigsaw
@@ -33,8 +31,9 @@ def parse_args():
     parser.add_argument('--mean', type=int, default=183,
                         help='value to subtract from input images')
     parser.add_argument('--gpu', type=int, default=1,
-                        help='gpu id to run on (-1 for cpu)')
-    parser.add_argument('--save', help='directory in which to save epoch snapshots.')
+                        help='gpu id to run on.')
+    parser.add_argument('--save', default='/data/eddie/jigsaw/save/',
+                        help='directory in which to save epoch snapshots.')
 
     parser.add_argument('train_glob', help='path to directory of images for training')
     parser.add_argument('test_glob', help='path to directory of images for test')
@@ -81,13 +80,12 @@ updater = chainer.training.StandardUpdater(
     device=args.gpu,
 )
 
-
 trainer = chainer.training.Trainer(
     updater,
     (args.epochs, 'epoch'),
+    out=args.save,
 )
 
-# out=args.out_dir,
 trainer.extend(extensions.LogReport(trigger=(args.iter_trigger, 'iteration')))
 
 trainer.extend(extensions.PrintReport([
@@ -107,15 +105,12 @@ trainer.extend(extensions.Evaluator(
 
 trainer.extend(extensions.ProgressBar(update_interval=1, bar_length=50))
 
-
-"""
 trainer.extend(extensions.snapshot(filename=constants.TRAINER_SAVE_NAME))
 
 trainer.extend(extensions.snapshot_object(
-    target=triplet_model,
+    target=jigsaw,
     filename=constants.MODEL_SAVE_NAME,
 ))
-"""
 
 print 'training ...'
 trainer.run()
