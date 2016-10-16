@@ -6,6 +6,9 @@ A chainer implementation of self-supervised [jigsaw CNNs](https://arxiv.org/abs/
 
 # Patches
 
+![Random crop](data/crop.jpg)
+
+![Random patches](data/patches.jpg)
 
 # Results
 

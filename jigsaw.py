@@ -46,7 +46,7 @@ class Jigsaw(chainer.Chain):
 
     def __call__(self, x, t):
         """ Input is a batch of patches of shape:
-                (patches, batches, channels, width, height)
+                (batches, patches, channels, width, height)
 
             Jigsaw CNN uses:
                 patches = 9
@@ -56,17 +56,14 @@ class Jigsaw(chainer.Chain):
         patch_representations = []
 
         # move patch axis to position 0 for splitting
-        # A BIT HACKY MAKE NICER
         x = F.transpose(F.reshape(x, (-1, 9, 3, 64, 64)), (1, 0, 2, 3, 4))
         t = F.reshape(t, (-1,))
 
         """ Split into patch batches of shape (batches, channels, height, width) and
             calculate representation for each patch """
         for patch_batch in F.split_axis(x, x.data.shape[0], 0):
-            # drop patch axis for alexnet
-            h = F.reshape(patch_batch, x.data.shape[1:])
-            h = self.patch_representation(h)
-            patch_representations.append(h)
+            h = F.reshape(patch_batch, x.data.shape[1:])  # drop patch axis after split
+            patch_representations.append(self.patch_representation(h))
 
         """ Join along the representation axis """
         h = F.concat(patch_representations, axis=1)

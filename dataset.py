@@ -18,8 +18,7 @@ class PatchDataset(DatasetMixin):
         self.permutation_indices = permutations.load_permutation_indices()
 
     def __len__(self):
-        # TODO, make number of batches a param
-        return min(self.n, 192 * 10000)
+        return self.n
 
     def get_example(self, i):
         image = Image.open(self.files[i]).convert('RGB')

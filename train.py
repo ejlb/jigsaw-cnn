@@ -1,7 +1,6 @@
-# number of test / train images
-# visualisations
-# number of patches
-# benchmark against something (imagenet?)
+# visualisation
+# ? benchmark against something (imagenet?)
+# ? 16 patches
 
 import argparse
 
@@ -35,8 +34,8 @@ def parse_args():
     parser.add_argument('--save', default='/data/eddie/jigsaw/save/',
                         help='directory in which to save epoch snapshots.')
 
-    parser.add_argument('train_glob', help='path to directory of images for training')
-    parser.add_argument('test_glob', help='path to directory of images for test')
+    parser.add_argument('train_glob', help='glob of images for training (must be quoted)')
+    parser.add_argument('test_glob', help='glob of images for test (must be quoted)')
 
     return parser.parse_args()
 
