@@ -6,7 +6,12 @@ A chainer implementation of self-supervised [jigsaw CNNs](https://arxiv.org/abs/
 
 # Patches
 
+The jigsaw CNN attempts to learn a representation by reassembling an image from it's patches.
+
 ![Random crop](data/crop.jpg)
+
+This is achieved by randomly cropping a square from the image, segmenting the crop into 9 patches,
+permuting the patches and then attempting to predict what permutation was applied to the patches.
 
 ![Random patches](data/patches.jpg)
 
