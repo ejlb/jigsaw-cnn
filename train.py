@@ -1,14 +1,10 @@
-# number of permutations and generation method (look at confusion matrix)
-# number of patches
-# number of images
-# visualisations
-
 # -1 for cpu
 # save option
-# scale min-dim & crop_size & batch & iter_trigger stuff
 # number of test / train images
+# visualisations
 
-# benchmark against something
+# number of patches
+# benchmark against something (imagenet?)
 
 import argparse
 
