@@ -6,18 +6,21 @@ from chainer.dataset import DatasetMixin
 
 import numpy as np
 
-import patches
-import permutations
+from . import image
+from . import patches
+from . import permutations
+
 
 
 class PatchDataset(DatasetMixin):
-    def __init__(self,
-            path_glob,
-            mean,
-            over_sample=1,
-            drop_patch=False,
-            labels=True,
-        ):
+    def __init__(
+        self,
+        path_glob,
+        mean,
+        over_sample=1,
+        drop_patch=False,
+        labels=True,
+    ):
 
         self.files = glob.glob(path_glob)
         self.n = len(self.files)
@@ -31,14 +34,17 @@ class PatchDataset(DatasetMixin):
         return self.n * self.over_sample
 
     def get_example(self, i):
+        """ Process and return image `i` in input glob """
+
         # we use each image `over_sample` times per batch with different random crops
         over_sample_index = i // self.over_sample
 
-        image = Image.open(self.files[over_sample_index]).convert('RGB')
-        image = patches.scale(image)
-        image_array = np.array(image).transpose(2, 1, 0).astype(np.float32) - self.mean
+        ith_image = Image.open(self.files[over_sample_index]).convert('RGB')
+        ith_image = image.scale(ith_image)
 
-        image_crop = patches.random_crop(image_array)
+        image_array = np.array(ith_image).transpose(2, 1, 0).astype(np.float32) - self.mean
+
+        image_crop = image.random_crop(image_array)
         image_patches = patches.random_patches(image_crop)
 
         if self.drop_patch:
@@ -56,6 +62,6 @@ class PatchDataset(DatasetMixin):
             return permutated_patches
 
     def get_name(self, i):
-        """ file name for index `i` """
+        """ Name of the `i-th` file in input glob (works with over sampling) """
         over_sample_index = i // self.over_sample
         return self.files[over_sample_index]
