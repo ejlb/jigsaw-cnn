@@ -27,7 +27,8 @@ class Jigsaw(chainer.Chain):
         )
 
     def patch_representation(self, x):
-        """ Input is a batch of 64 x 64 image patches """
+        """ Input is a batch of 64 x 64 image patches. """
+
         h = F.relu(self.conv1(x))
         h = F.max_pooling_2d(self.bn1(h), 3, stride=2)
 
@@ -37,27 +38,19 @@ class Jigsaw(chainer.Chain):
         h = F.relu(self.conv3(h))
         h = F.relu(self.conv4(h))
 
-        h = F.max_pooling_2d(F.relu(self.conv5(h)), 3, stride=2)
+        h = F.relu(self.conv5(h))
+        h = F.max_pooling_2d(h, 3, stride=2)
 
         """ This is concatenated across 9 patches to get 4608 representation """
         h = F.relu(self.fc6(h))
 
         return h
 
-    def __call__(self, x, t):
-        """ Input is a batch of patches of shape:
-                (batches, patches, channels, width, height)
-
-            Jigsaw CNN uses:
-                patches = 9
-                width = 64
-                height = 64
-        """
+    def jigsaw_representation(self, x):
         patch_representations = []
 
         # move patch axis to position 0 for splitting
-        x = F.transpose(F.reshape(x, (-1, 9, 3, 64, 64)), (1, 0, 2, 3, 4))
-        t = F.reshape(t, (-1,))
+        x = F.transpose(x, (1, 0, 2, 3, 4))
 
         """ Split into patch batches of shape (batches, channels, height, width) and
             calculate representation for each patch """
@@ -70,6 +63,24 @@ class Jigsaw(chainer.Chain):
 
         h = F.relu(self.fc7(h))
         h = self.fc8(h)
+
+        return h
+
+    def __call__(self, x, t):
+        """ Input is a batch of patches of shape:
+                (batches, patches, channels, width, height)
+
+            Jigsaw CNN uses:
+                patches = 9
+                width = 64
+                height = 64
+        """
+
+        # drop join axis from chainer dataset abstraction
+        x = F.reshape(x, (-1, 9, 3, 64, 64))
+        t = F.reshape(t, (-1,))
+
+        h = self.jigsaw_representation(x)
 
         """ Loss is a prediction of which permutation we applied to these patches """
         loss = F.softmax_cross_entropy(h, t)
