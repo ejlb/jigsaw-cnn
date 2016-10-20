@@ -1,6 +1,4 @@
-# visualisation
-# ? benchmark against something (imagenet?)
-# ? 16 patches
+from __future__ import print_function
 
 import argparse
 
@@ -10,10 +8,10 @@ from chainer import optimizers
 from chainer.optimizer import WeightDecay
 from chainer.training import extensions
 
-import constants
-import dataset
 
-from jigsaw import Jigsaw
+from . import constants
+from . import dataset
+from .jigsaw import Jigsaw
 
 
 def parse_args():
@@ -27,7 +25,7 @@ def parse_args():
                         help='CPU processes to use for batch loading')
     parser.add_argument('--iter-trigger', type=int, default=380,
                         help='Iteration multiples that trigger logging')
-    parser.add_argument('--mean', type=int, default=183,
+    parser.add_argument('--mean', type=int, default=constants.IMAGE_MEAN,
                         help='value to subtract from input images')
     parser.add_argument('--gpu', type=int, default=1,
                         help='gpu id to run on.')
@@ -47,7 +45,7 @@ def parse_args():
 
 
 def build_trainer(args):
-    print 'loading data ...'
+    print('loading data ...')
 
     train_dataset = dataset.PatchDataset(
         args.train_glob,
@@ -63,7 +61,7 @@ def build_trainer(args):
         False
     )
 
-    print 'train:%d test:%d' % (len(train_dataset), len(test_dataset))
+    print('train:%d test:%d' % (len(train_dataset), len(test_dataset)))
 
     jigsaw = Jigsaw()
     jigsaw.to_gpu(args.gpu)
@@ -129,7 +127,7 @@ def build_trainer(args):
 
 if __name__ == '__main__':
     args = parse_args()
-    print args
+    print('arguments: %s' % args)
 
     trainer = build_trainer(args)
 
@@ -137,5 +135,5 @@ if __name__ == '__main__':
         print('loading model: %s ...' % args.load)
         chainer.serializers.load_npz(args.load, trainer)
 
-    print 'training ...'
+    print('training ...')
     trainer.run()

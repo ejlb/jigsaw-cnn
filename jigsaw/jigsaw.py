@@ -7,7 +7,8 @@ from chainer import reporter
 
 class Jigsaw(chainer.Chain):
     """ Siamese jigsaw CNN for self-supervised learning on image patches. The patch
-        representations come from an Alexnet-type network adapted to take 64x64 crops """
+        representations come from an Alexnet-type network adapted to take 64x64 crops
+    """
 
     def __init__(self):
         super(Jigsaw, self).__init__(
@@ -76,8 +77,7 @@ class Jigsaw(chainer.Chain):
                 height = 64
         """
 
-        # drop join axis from chainer dataset abstraction
-        x = F.reshape(x, (-1, 9, 3, 64, 64))
+        x = F.reshape(x, (-1, 9, 3, 64, 64))  # drop join axis from chainer dataset abstraction
         t = F.reshape(t, (-1,))
 
         h = self.jigsaw_representation(x)
