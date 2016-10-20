@@ -77,12 +77,7 @@ class Jigsaw(chainer.Chain):
                 height = 64
         """
 
-<<<<<<< HEAD:jigsaw.py
-        # drop join axis from chainer dataset abstraction
-        x = F.reshape(x, (-1, 9, 3, 64, 64))
-=======
         x = F.reshape(x, (-1, 9, 3, 64, 64))  # drop join axis from chainer dataset abstraction
->>>>>>> refactor to make prediction / representation calculation easier:jigsaw/jigsaw.py
         t = F.reshape(t, (-1,))
 
         h = self.jigsaw_representation(x)

@@ -21,6 +21,16 @@ This is achieved by:
 
 With the aim of learning about structure, colour and texture without labels.
 
+# Usage
+
+```
+python -m jigsaw.train --gpu 3 "/path/to/train/*.jpg" "/path/to/test/*.jpg"
+```
+
+Note that the path globs must be quoted or the shell we expand them. Images will automatically
+be rescaled, cropped and turned into patches at runtime. Check `--help` for more details. Training
+on the cpu is not supported, you must specify a gpu ID. 
+
 # Results
 
 
