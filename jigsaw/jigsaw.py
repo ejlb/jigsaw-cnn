@@ -5,6 +5,10 @@ from chainer import links as L
 from chainer import reporter
 
 
+def squeeze(x):
+    return F.reshape(x, [di for di in x.data.shape if di != 1])
+
+
 class Jigsaw(chainer.Chain):
     """ Siamese jigsaw CNN for self-supervised learning on image patches. The patch
         representations come from an Alexnet-type network adapted to take 64x64 crops
@@ -27,8 +31,8 @@ class Jigsaw(chainer.Chain):
             fc8=L.Linear(4096, 100),
         )
 
-    def patch_representation(self, x):
-        """ Input is a batch of 64 x 64 image patches. """
+    def patch_representation(self, x, dense_layer=True):
+        """ Calculate representation for a batch of 64 x 64 image patches. """
 
         h = F.relu(self.conv1(x))
         h = F.max_pooling_2d(self.bn1(h), 3, stride=2)
@@ -42,25 +46,29 @@ class Jigsaw(chainer.Chain):
         h = F.relu(self.conv5(h))
         h = F.max_pooling_2d(h, 3, stride=2)
 
-        """ This is concatenated across 9 patches to get 4608 representation """
-        h = F.relu(self.fc6(h))
+        if dense_layer:
+            h = F.relu(self.fc6(h))
 
         return h
 
     def jigsaw_representation(self, x):
-        patch_representations = []
+        """ Calculate representation for batch of images """
 
-        # move patch axis to position 0 for splitting
-        x = F.transpose(x, (1, 0, 2, 3, 4))
+        n_batch = x.data.shape[0]
+        n_patch = x.data.shape[1]
 
-        """ Split into patch batches of shape (batches, channels, height, width) and
-            calculate representation for each patch """
-        for patch_batch in F.split_axis(x, x.data.shape[0], 0):
-            h = F.reshape(patch_batch, x.data.shape[1:])  # drop patch axis after split
-            patch_representations.append(self.patch_representation(h))
+        # merge batch and patch axis for batch representation calculation
+        h = F.reshape(x, (
+            n_batch + n_patch,
+            x.data.shape[2],
+            x.data.shape[3],
+            x.data.shape[4],
+        ))
 
-        """ Join along the representation axis """
-        h = F.concat(patch_representations, axis=1)
+        h = self.patch_representation(h)
+
+        # split into batch and patch axis
+        h = F.reshape(h, (n_batch, n_patch, -1))
 
         h = F.relu(self.fc7(h))
         h = self.fc8(h)
@@ -77,12 +85,13 @@ class Jigsaw(chainer.Chain):
                 height = 64
         """
 
-        x = F.reshape(x, (-1, 9, 3, 64, 64))  # drop join axis from chainer dataset abstraction
-        t = F.reshape(t, (-1,))
+        # drop join axis from chainer dataset abstraction
+        x = squeeze(x)
+        t = squeeze(t)
 
         h = self.jigsaw_representation(x)
 
-        """ Loss is a prediction of which permutation we applied to these patches """
+        # loss is a prediction of which permutation we applied to these patches
         loss = F.softmax_cross_entropy(h, t)
         accuracy = F.accuracy(h, t)
 
