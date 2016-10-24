@@ -33,6 +33,7 @@ on the cpu is not supported, you must specify a gpu ID.
 
 # Results
 
+![Filters](data/filters.jpg)
 
 ## KNN
 
