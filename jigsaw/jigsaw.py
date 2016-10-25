@@ -59,7 +59,7 @@ class Jigsaw(chainer.Chain):
 
         # merge batch and patch axis for batch representation calculation
         h = F.reshape(x, (
-            n_batch + n_patch,
+            n_batch * n_patch,
             x.data.shape[2],
             x.data.shape[3],
             x.data.shape[4],

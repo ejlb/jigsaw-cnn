@@ -1,7 +1,7 @@
 import math
 import random
 
-import image
+from . import image
 
 
 def grid_coord_iter(grid_length, grid_square_length):
@@ -35,7 +35,7 @@ def random_patches(image_arr, patches=9, patch_size=75, crop_size=64):
     sq_patches = int(math.sqrt(patches))
 
     for m_start, m_stop, n_start, n_stop in grid_coord_iter(sq_patches, patch_size):
-        patch = image_arr[:, m_start:m_stop, n_start:n_stop]
+        patch = image_arr[:, n_start:n_stop, m_start:m_stop]
         random_patch = image.random_crop(patch, crop_size)
         random_patch_crops.append(random_patch)
 
