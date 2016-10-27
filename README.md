@@ -31,16 +31,10 @@ Note that the path globs must be quoted or the shell we expand them. Images will
 be rescaled, cropped and turned into patches at runtime. Check `--help` for more details. Training
 on the cpu is not supported, you must specify a gpu ID. 
 
-# Results
+# Filters
 
 ![Filters](data/filters.jpg)
 
-## KNN
-
-If we match images based on similarity between pool5 / conv5 patch representations we end 
-up with results like below where by we match on the model's face patch.
-
-![Patch maching](data/model-matching.jpg)
 
 # Notes
 
