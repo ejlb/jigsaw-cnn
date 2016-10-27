@@ -11,7 +11,6 @@ from . import patches
 from . import permutations
 
 
-
 class PatchDataset(DatasetMixin):
     def __init__(
         self,
