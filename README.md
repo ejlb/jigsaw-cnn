@@ -33,6 +33,9 @@ on the cpu is not supported, you must specify a gpu ID.
 
 # Filters
 
+This is what the first layer filters look like after 350k batches. They look good but need some
+more fine tuning.
+
 ![Filters](data/filters.jpg)
 
 
